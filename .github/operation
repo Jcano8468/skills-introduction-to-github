@@ -1,0 +1,521 @@
+import React, { useState } from 'react';
+import { AlertCircle, DollarSign, Users, MapPin, Calendar, Share2, Shield, Briefcase, Check } from 'lucide-react';
+
+const BailBondApp = () => {
+  const [currentTab, setCurrentTab] = useState('request');
+  const [formData, setFormData] = useState({
+    inmateInfo: { fullName: '', facilityName: '', bookingNumber: '', charges: '' },
+    bailInfo: { amount: '', deadline: '', courtDate: '' },
+    contactInfo: { name: '', phone: '', email: '', relationship: '' },
+    financialInfo: { downPaymentAmount: '', hasCollateral: false, collateralDescription: '', hasCosigner: false, cosignerInfo: '' }
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+  const [matches, setMatches] = useState([
+    { name: "ABC Bail Bonds", location: "Downtown", maxBailAmount: 50000 },
+    { name: "Freedom Bail Bonds", location: "Westside", maxBailAmount: 75000 },
+    { name: "Quick Release Bonds", location: "Eastside", maxBailAmount: 100000 }
+  ]);
+
+  const handleInputChange = (section, field, value) => {
+    setFormData({
+      ...formData,
+      [section]: {
+        ...formData[section],
+        [field]: value
+      }
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+    
+    try {
+      // Simulating API call since we can't make actual network requests
+      setTimeout(() => {
+        setCurrentTab('confirmation');
+        setIsSubmitting(false);
+      }, 1500);
+    } catch (error) {
+      console.error('Error submitting bail request:', error);
+      setError('Failed to submit bail request. Please try again later.');
+      setIsSubmitting(false);
+    }
+  };
+
+  const TabButton = ({ id, label, icon }) => {
+    const Icon = icon;
+    return (
+      <button
+        onClick={() => setCurrentTab(id)}
+        className={`flex flex-col items-center p-2 ${currentTab === id ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+      >
+        <Icon size={20} />
+        <span className="mt-1 text-xs">{label}</span>
+      </button>
+    );
+  };
+
+  const renderRequestForm = () => (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {error && (
+        <div className="bg-red-50 border-l-4 border-red-500 p-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <AlertCircle className="h-5 w-5 text-red-500" />
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <div className="bg-white p-4 rounded-lg shadow">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Inmate Information</h3>
+        <div className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Full Name</label>
+            <input
+              type="text"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              value={formData.inmateInfo.fullName}
+              onChange={(e) => handleInputChange('inmateInfo', 'fullName', e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Facility Name</label>
+            <input
+              type="text"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              value={formData.inmateInfo.facilityName}
+              onChange={(e) => handleInputChange('inmateInfo', 'facilityName', e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Booking Number</label>
+            <input
+              type="text"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              value={formData.inmateInfo.bookingNumber}
+              onChange={(e) => handleInputChange('inmateInfo', 'bookingNumber', e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Charges</label>
+            <textarea
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              rows="2"
+              value={formData.inmateInfo.charges}
+              onChange={(e) => handleInputChange('inmateInfo', 'charges', e.target.value)}
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white p-4 rounded-lg shadow">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Bail Information</h3>
+        <div className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Bail Amount ($)</label>
+            <input
+              type="number"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              value={formData.bailInfo.amount}
+              onChange={(e) => handleInputChange('bailInfo', 'amount', e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Bail Deadline (if any)</label>
+            <input
+              type="date"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              value={formData.bailInfo.deadline}
+              onChange={(e) => handleInputChange('bailInfo', 'deadline', e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Next Court Date</label>
+            <input
+              type="date"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              value={formData.bailInfo.courtDate}
+              onChange={(e) => handleInputChange('bailInfo', 'courtDate', e.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white p-4 rounded-lg shadow">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Your Contact Information</h3>
+        <div className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Your Name</label>
+            <input
+              type="text"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              value={formData.contactInfo.name}
+              onChange={(e) => handleInputChange('contactInfo', 'name', e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+            <input
+              type="tel"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              value={formData.contactInfo.phone}
+              onChange={(e) => handleInputChange('contactInfo', 'phone', e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <input
+              type="email"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              value={formData.contactInfo.email}
+              onChange={(e) => handleInputChange('contactInfo', 'email', e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Relationship to Inmate</label>
+            <input
+              type="text"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              value={formData.contactInfo.relationship}
+              onChange={(e) => handleInputChange('contactInfo', 'relationship', e.target.value)}
+              required
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white p-4 rounded-lg shadow">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Financial Information</h3>
+        <div className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Available Down Payment Amount ($)</label>
+            <input
+              type="number"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              value={formData.financialInfo.downPaymentAmount}
+              onChange={(e) => handleInputChange('financialInfo', 'downPaymentAmount', e.target.value)}
+            />
+          </div>
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+              checked={formData.financialInfo.hasCollateral}
+              onChange={(e) => handleInputChange('financialInfo', 'hasCollateral', e.target.checked)}
+            />
+            <label className="ml-2 block text-sm font-medium text-gray-700">
+              I have collateral available (property, vehicle, etc.)
+            </label>
+          </div>
+          {formData.financialInfo.hasCollateral && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Describe Collateral</label>
+              <textarea
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+                rows="2"
+                value={formData.financialInfo.collateralDescription}
+                onChange={(e) => handleInputChange('financialInfo', 'collateralDescription', e.target.value)}
+              ></textarea>
+            </div>
+          )}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+              checked={formData.financialInfo.hasCosigner}
+              onChange={(e) => handleInputChange('financialInfo', 'hasCosigner', e.target.checked)}
+            />
+            <label className="ml-2 block text-sm font-medium text-gray-700">
+              I have a co-signer available
+            </label>
+          </div>
+          {formData.financialInfo.hasCosigner && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Co-signer Information</label>
+              <textarea
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+                rows="2"
+                value={formData.financialInfo.cosignerInfo}
+                onChange={(e) => handleInputChange('financialInfo', 'cosignerInfo', e.target.value)}
+              ></textarea>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="flex justify-between">
+        <div></div>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="bg-blue-600 text-white px-6 py-2 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isSubmitting ? 'Submitting...' : 'Submit Request'}
+        </button>
+      </div>
+    </form>
+  );
+
+  const renderConfirmation = () => (
+    <div className="bg-white p-6 rounded-lg shadow text-center">
+      <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <Check className="h-8 w-8 text-green-600" />
+      </div>
+      <h2 className="text-2xl font-bold text-gray-900 mb-2">Request Submitted!</h2>
+      <p className="text-gray-600 mb-6">
+        Your bail bond request has been sent to qualified bondsmen in your area. You should start receiving responses shortly.
+      </p>
+      
+      {matches.length > 0 && (
+        <div className="mb-6 text-left">
+          <h3 className="text-lg font-medium text-gray-900 mb-3">Available Bondsmen</h3>
+          <div className="space-y-3">
+            {matches.map((match, index) => (
+              <div key={index} className="border p-3 rounded-lg">
+                <h4 className="font-medium">{match.name}</h4>
+                <p className="text-sm text-gray-600">Location: {match.location}</p>
+                <p className="text-sm text-gray-600">Max Bail Amount: ${match.maxBailAmount.toLocaleString()}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-4">
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <h3 className="font-medium text-blue-800 mb-2">Need more help?</h3>
+          <div className="space-y-2">
+            <button 
+              className="w-full bg-white border border-blue-300 text-blue-600 px-4 py-2 rounded-md shadow-sm hover:bg-blue-50"
+              onClick={() => setCurrentTab('fundraise')}
+            >
+              Start a Fundraiser
+            </button>
+            <button 
+              className="w-full bg-white border border-blue-300 text-blue-600 px-4 py-2 rounded-md shadow-sm hover:bg-blue-50"
+              onClick={() => setCurrentTab('legal')}
+            >
+              Find Legal Help
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderFundraising = () => (
+    <div className="space-y-6">
+      <div className="bg-white p-4 rounded-lg shadow">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Start a Fundraiser</h3>
+        <p className="text-gray-600 mb-4">
+          Need help raising bail money or funds for legal expenses?
+          Create a fundraiser to share with friends, family, and community.
+        </p>
+        
+        <form className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Fundraiser Title</label>
+            <input
+              type="text"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              placeholder="Help [Name] with Bail and Legal Expenses"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Goal Amount ($)</label>
+            <input
+              type="number"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              placeholder="5000"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Story (What happened and why you need help)</label>
+            <textarea
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              rows="4"
+              placeholder="Explain the situation and how the funds will be used..."
+            ></textarea>
+          </div>
+          
+          <div className="bg-blue-50 p-3 rounded-md">
+            <h4 className="text-sm font-medium text-blue-800 mb-2">Share Options</h4>
+            <div className="flex flex-wrap gap-2">
+              <button className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm flex items-center">
+                <Share2 size={16} className="mr-1" /> Facebook
+              </button>
+              <button className="bg-blue-400 text-white px-3 py-1 rounded-md text-sm flex items-center">
+                <Share2 size={16} className="mr-1" /> Twitter
+              </button>
+              <button className="bg-green-600 text-white px-3 py-1 rounded-md text-sm flex items-center">
+                <Share2 size={16} className="mr-1" /> WhatsApp
+              </button>
+              <button className="bg-purple-600 text-white px-3 py-1 rounded-md text-sm flex items-center">
+                <Share2 size={16} className="mr-1" /> Text Message
+              </button>
+            </div>
+          </div>
+          
+          <button
+            type="button"
+            className="w-full bg-green-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            Create Fundraiser
+          </button>
+        </form>
+      </div>
+      
+      <div className="bg-white p-4 rounded-lg shadow">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">How Fundraising Works</h3>
+        <div className="space-y-3">
+          <div className="flex items-start">
+            <div className="bg-blue-100 p-2 rounded-full mr-3">
+              <span className="text-blue-800 font-bold">1</span>
+            </div>
+            <div>
+              <h4 className="font-medium">Create your fundraiser</h4>
+              <p className="text-sm text-gray-600">Tell your story and set your fundraising goal</p>
+            </div>
+          </div>
+          
+          <div className="flex items-start">
+            <div className="bg-blue-100 p-2 rounded-full mr-3">
+              <span className="text-blue-800 font-bold">2</span>
+            </div>
+            <div>
+              <h4 className="font-medium">Share with your network</h4>
+              <p className="text-sm text-gray-600">Post to social media and send to friends and family</p>
+            </div>
+          </div>
+          
+          <div className="flex items-start">
+            <div className="bg-blue-100 p-2 rounded-full mr-3">
+              <span className="text-blue-800 font-bold">3</span>
+            </div>
+            <div>
+              <h4 className="font-medium">Collect donations</h4>
+              <p className="text-sm text-gray-600">Funds go directly to your account</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderLegalHelp = () => (
+    <div className="space-y-6">
+      <div className="bg-white p-4 rounded-lg shadow">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Find Legal Help</h3>
+        <p className="text-gray-600 mb-4">
+          Need an attorney? We can help connect you with qualified legal representation.
+        </p>
+        
+        <form className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Type of Legal Help Needed</label>
+            <select className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+              <option value="">Select type...</option>
+              <option value="criminal">Criminal Defense</option>
+              <option value="immigration">Immigration</option>
+              <option value="family">Family Law</option>
+              <option value="civil">Civil Litigation</option>
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Budget</label>
+            <select className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+              <option value="">Select budget range...</option>
+              <option value="low">Need Pro Bono (Free)</option>
+              <option value="medium">$1,000 - $5,000</option>
+              <option value="high">$5,000+</option>
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Case Description</label>
+            <textarea
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
+              rows="4"
+              placeholder="Brief description of the case..."
+            ></textarea>
+          </div>
+          
+          <button
+            type="button"
+            className="w-full bg-blue-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Find Attorneys
+          </button>
+        </form>
+      </div>
+      
+      <div className="bg-white p-4 rounded-lg shadow">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Legal Resources</h3>
+        <div className="space-y-4">
+          <div className="border-l-4 border-blue-500 pl-3">
+            <h4 className="font-medium">Public Defender's Office</h4>
+            <p className="text-sm text-gray-600">Free legal representation for those who qualify</p>
+            <a href="#" className="text-sm text-blue-600 hover:underline">Contact Information</a>
+          </div>
+          
+          <div className="border-l-4 border-blue-500 pl-3">
+            <h4 className="font-medium">Legal Aid Society</h4>
+            <p className="text-sm text-gray-600">Free or low-cost legal services for qualifying individuals</p>
+            <a href="#" className="text-sm text-blue-600 hover:underline">Learn More</a>
+          </div>
+          
+          <div className="border-l-4 border-blue-500 pl-3">
+            <h4 className="font-medium">Bar Association Referral Service</h4>
+            <p className="text-sm text-gray-600">Get connected with qualified attorneys in your area</p>
+            <a href="#" className="text-sm text-blue-600 hover:underline">Find Attorneys</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="max-w-4xl mx-auto p-4 bg-gray-50">
+      <div className="flex flex-col space-y-4">
+        <div className="bg-white p-4 rounded-lg shadow">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Bail Bond Assistance</h2>
+            <div className="text-sm text-gray-500">Need help? Call 1-800-BAIL-NOW</div>
+          </div>
+          
+          <div className="grid grid-cols-4 gap-2 mb-6">
+            <TabButton id="request" label="Request" icon={DollarSign} />
+            <TabButton id="confirmation" label="Status" icon={Shield} />
+            <TabButton id="fundraise" label="Fundraise" icon={Users} />
+            <TabButton id="legal" label="Legal Help" icon={Briefcase} />
+          </div>
+        </div>
+        
+        <div className="bg-white p-4 rounded-lg shadow">
+          {currentTab === 'request' && renderRequestForm()}
+          {currentTab === 'confirmation' && renderConfirmation()}
+          {currentTab === 'fundraise' && renderFundraising()}
+          {currentTab === 'legal' && renderLegalHelp()}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default BailBondApp;
